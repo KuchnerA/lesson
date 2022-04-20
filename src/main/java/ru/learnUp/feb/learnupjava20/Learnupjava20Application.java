@@ -5,14 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import ru.learnUp.feb.learnupjava20.dao.entity.Comment;
-import ru.learnUp.feb.learnupjava20.dao.entity.Post;
-import ru.learnUp.feb.learnupjava20.dao.post.PostDao;
-import ru.learnUp.feb.learnupjava20.service.Calculator;
-import ru.learnUp.feb.learnupjava20.service.Operation;
-import ru.learnUp.feb.learnupjava20.service.ValueService;
+import ru.learnUp.feb.learnupjava20.dao.comment.CommentService;
+import ru.learnUp.feb.learnupjava20.dao.post.PostService;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 @SpringBootApplication
 public class Learnupjava20Application {
@@ -22,26 +20,18 @@ public class Learnupjava20Application {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(Learnupjava20Application.class, args);
 
-        Calculator calculator = context.getBean(Calculator.class);
-        log.info("{} * {} = {}", 2, 2, calculator.calculate(2, 2, Operation.MULTIPLY));
+        PostService postService = context.getBean(PostService.class);
 
-        context.getBean(ValueService.class).print();
+        CommentService commentService = context.getBean(CommentService.class);
 
-        PostDao postDao = context.getBean(PostDao.class);
+        log.info("Posts: {}", postService.getPosts());
+        log.info("Comment: {}", commentService.getComments());
 
-        Comment comment =new Comment();
-        comment.setText("Comment text");
-
-        Post post = new Post();
-        post.setText("Post text");
-        post.setTitle("Post title");
-        comment.setPost(post);
-        post.setComments(List.of(comment));
-
-        postDao.createPost(post);
-
-        List<Post> posts = postDao.getPosts();
-        log.info("{}", posts);
+//        Class.forName("org.postgresql.Driver");
+//
+//        Connection connection = DriverManager.getConnection("jdbc url");
+//        Statement statement = connection.createStatement();
+//        statement.execute("");
 
     }
 
