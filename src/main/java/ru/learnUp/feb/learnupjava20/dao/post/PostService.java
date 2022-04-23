@@ -1,5 +1,6 @@
 package ru.learnUp.feb.learnupjava20.dao.post;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.learnUp.feb.learnupjava20.dao.entity.Post;
 import ru.learnUp.feb.learnupjava20.dao.repository.PostRepository;
@@ -23,8 +24,9 @@ public class PostService {
         return repository.findAll();
     }
 
+    @Cacheable(value = "post")
     public Post getPostById(Long id) {
-        return repository.getById(id);
+        return repository.findId1(id);
     }
 
 }

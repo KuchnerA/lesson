@@ -5,8 +5,10 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -14,7 +16,7 @@ import java.util.List;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Post {
+public class Post implements Serializable {
 
     @Id
     @GeneratedValue

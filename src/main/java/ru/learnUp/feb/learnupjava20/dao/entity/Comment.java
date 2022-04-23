@@ -5,13 +5,14 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
 @Setter
 @ToString(exclude = {"post"})
 @RequiredArgsConstructor
-public class Comment {
+public class Comment implements Serializable {
 
     @Id
     @GeneratedValue
@@ -22,7 +23,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn
-    @Fetch(FetchMode.SELECT)
+    @Fetch(FetchMode.JOIN)
     private Post post;
 
 }
