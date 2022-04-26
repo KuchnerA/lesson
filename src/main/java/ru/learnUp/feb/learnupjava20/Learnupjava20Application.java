@@ -1,5 +1,6 @@
 package ru.learnUp.feb.learnupjava20;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -7,40 +8,51 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import ru.learnUp.feb.learnupjava20.dao.User;
 import ru.learnUp.feb.learnupjava20.dao.comment.CommentService;
+import ru.learnUp.feb.learnupjava20.dao.entity.Comment;
+import ru.learnUp.feb.learnupjava20.dao.entity.Post;
 import ru.learnUp.feb.learnupjava20.dao.post.PostService;
 import ru.learnUp.feb.learnupjava20.dao.repository.PostRepository;
+import ru.learnUp.feb.learnupjava20.service.user.UserService;
 
+import java.time.LocalDate;
+import java.util.List;
+
+@Slf4j
 @SpringBootApplication
 @EnableCaching
-//@EnableRedisRepositories
 public class Learnupjava20Application {
 
-    private static final Logger log = LoggerFactory.getLogger(Learnupjava20Application.class);
-
     public static void main(String[] args) {
+
         ConfigurableApplicationContext context = SpringApplication.run(Learnupjava20Application.class, args);
+
+        UserService userService = context.getBean(UserService.class);
+
+        userService.save(User.builder()
+                        .name("Ivan 1")
+                        .surname("Ivanov 1")
+                        .birthDate(LocalDate.of(2000, 12,20))
+                        .address("St.Petersburg")
+                .build());
 
         PostService postService = context.getBean(PostService.class);
 
-        CommentService commentService = context.getBean(CommentService.class);
+        Post post = new Post();
+        post.setText("New post text");
+        post.setTitle("Nuw post title");
+        post.setComments(
+                List.of(
+                new Comment("New comment 1", post),
+                new Comment("New comment 2", post),
+                new Comment("New comment 3", post)
+                )
+        );
 
-        log.info("Posts: {}", postService.getPosts());
-        log.info("Comment: {}", commentService.getComments());
+        postService.createPost(post);
 
-        PostRepository postRepository = context.getBean(PostRepository.class);
-
-        //log.info("Search result: {}", postRepository.findAllByTextContains("asd"));
-
-        //log.info("Search result: {}", postRepository.findByIdWithComments());
-
-        //log.info("Post 1 have {} comments", postRepository.getCommentsCount(1));
-
-        //log.info("Post id = 1: {}", postRepository.findId1(1L));
-
-        for (int i = 0; i < 5; i++) {
-            log.info("Post id = 1: {}", postService.getPostById(1L));
-        }
+        log.info("Created: {}", post);
 
     }
 

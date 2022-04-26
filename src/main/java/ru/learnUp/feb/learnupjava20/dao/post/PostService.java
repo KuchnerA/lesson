@@ -1,7 +1,10 @@
 package ru.learnUp.feb.learnupjava20.dao.post;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.learnUp.feb.learnupjava20.dao.entity.Post;
 import ru.learnUp.feb.learnupjava20.dao.repository.PostRepository;
 
@@ -16,6 +19,7 @@ public class PostService {
         this.repository = repository;
     }
 
+    @Transactional
     public Post createPost(Post post) {
         return repository.save(post);
     }
@@ -27,6 +31,12 @@ public class PostService {
     @Cacheable(value = "post")
     public Post getPostById(Long id) {
         return repository.findId1(id);
+    }
+
+    @Transactional
+    @CacheEvict(value = "post", key = "#post.id")
+    public void update(Post post){
+        repository.save(post);
     }
 
 }
