@@ -16,7 +16,7 @@ import java.io.Serializable;
 public class Comment implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -26,6 +26,9 @@ public class Comment implements Serializable {
     @JoinColumn
     @Fetch(FetchMode.JOIN)
     private Post post;
+
+    @Version
+    private Long version;
 
     public Comment(String text, Post post) {
         this.text = text;

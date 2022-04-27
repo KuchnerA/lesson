@@ -1,15 +1,21 @@
 package ru.learnUp.feb.learnupjava20.dao.post;
 
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.OptimisticLock;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.learnUp.feb.learnupjava20.dao.entity.Post;
 import ru.learnUp.feb.learnupjava20.dao.repository.PostRepository;
 
+import javax.persistence.LockModeType;
+import javax.persistence.OptimisticLockException;
 import java.util.List;
 
+@Slf4j
 @Service
 public class PostService {
 
@@ -35,8 +41,13 @@ public class PostService {
 
     @Transactional
     @CacheEvict(value = "post", key = "#post.id")
+    @Lock(value = LockModeType.READ)
     public void update(Post post){
-        repository.save(post);
+        try {
+            repository.save(post);
+        } catch (OptimisticLockException e) {
+            log.warn("Optimistic lock exception for post {}", post.getId());
+        }
     }
 
 }

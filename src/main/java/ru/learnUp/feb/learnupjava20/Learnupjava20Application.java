@@ -18,42 +18,31 @@ import ru.learnUp.feb.learnupjava20.service.user.UserService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @SpringBootApplication
 @EnableCaching
 public class Learnupjava20Application {
 
+    static void updateAsync(PostService service) {
+
+        Post post = service.getPostById(2L);
+        post.setTitle("Title new 4");
+
+        for (int i = 0; i < 5; i++) {
+            new Thread(() -> service.update(post)).start();
+        }
+
+    }
+
     public static void main(String[] args) {
 
         ConfigurableApplicationContext context = SpringApplication.run(Learnupjava20Application.class, args);
 
-        UserService userService = context.getBean(UserService.class);
-
-        userService.save(User.builder()
-                        .name("Ivan 1")
-                        .surname("Ivanov 1")
-                        .birthDate(LocalDate.of(2000, 12,20))
-                        .address("St.Petersburg")
-                .build());
-
         PostService postService = context.getBean(PostService.class);
 
-        Post post = new Post();
-        post.setText("New post text");
-        post.setTitle("Nuw post title");
-        post.setComments(
-                List.of(
-                new Comment("New comment 1", post),
-                new Comment("New comment 2", post),
-                new Comment("New comment 3", post)
-                )
-        );
-
-        postService.createPost(post);
-
-        log.info("Created: {}", post);
-
+        updateAsync(postService);
     }
 
 }
