@@ -5,6 +5,7 @@ import org.hibernate.annotations.OptimisticLock;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,9 @@ import ru.learnUp.feb.learnupjava20.dao.repository.PostRepository;
 import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
 import java.util.List;
+
+import static org.springframework.data.jpa.domain.Specification.where;
+import static ru.learnUp.feb.learnupjava20.dao.repository.PostSpecification.byFilter;
 
 @Slf4j
 @Service
@@ -34,6 +38,11 @@ public class PostService {
         return repository.findAll();
     }
 
+    public List<Post> getPostsBy(PostFilter filter) {
+        Specification<Post> specification = where(byFilter(filter));
+        return repository.findAll(specification);
+    }
+
     @Cacheable(value = "post")
     public Post getPostById(Long id) {
         return repository.findId1(id);
@@ -42,12 +51,18 @@ public class PostService {
     @Transactional
     @CacheEvict(value = "post", key = "#post.id")
     @Lock(value = LockModeType.READ)
-    public void update(Post post){
+    public Post update(Post post){
         try {
-            repository.save(post);
+            return repository.save(post);
         } catch (OptimisticLockException e) {
             log.warn("Optimistic lock exception for post {}", post.getId());
+            throw e;
         }
+    }
+
+    public Boolean delete(Long id) {
+        repository.delete(repository.getById(id));
+        return true;
     }
 
 }

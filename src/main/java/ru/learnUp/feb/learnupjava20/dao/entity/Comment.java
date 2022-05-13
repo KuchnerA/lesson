@@ -30,7 +30,8 @@ public class Comment implements Serializable {
     @Version
     private Long version;
 
-    public Comment(String text, Post post) {
+    public Comment(Long id, String text, Post post) {
+        this.id = id;
         this.text = text;
         this.post = post;
     }

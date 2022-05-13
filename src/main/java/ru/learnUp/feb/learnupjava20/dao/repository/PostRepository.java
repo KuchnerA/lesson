@@ -1,5 +1,6 @@
 package ru.learnUp.feb.learnupjava20.dao.repository;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,8 +12,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByTitle(String title);
-
-    //List<Post> findAllByTextContains(String text);
 
     @Query(value = "select * from post p left join comment c on p.id = c.post_id where c.id is not null", nativeQuery = true)
     List<Post> findByIdWithComments();
@@ -26,4 +25,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "from Post p join fetch p.comments where p.id = :id")
     Post findId1(Long id);
+
+    List<Post> findAll(Specification<Post> specification);
 }

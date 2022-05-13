@@ -1,5 +1,8 @@
 package ru.learnUp.feb.learnupjava20;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import ru.learnUp.feb.learnupjava20.dao.User;
 import ru.learnUp.feb.learnupjava20.dao.comment.CommentService;
+import ru.learnUp.feb.learnupjava20.dao.entity.Book;
 import ru.learnUp.feb.learnupjava20.dao.entity.Comment;
 import ru.learnUp.feb.learnupjava20.dao.entity.Post;
 import ru.learnUp.feb.learnupjava20.dao.post.PostService;
@@ -36,13 +40,31 @@ public class Learnupjava20Application {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JsonProcessingException {
 
         ConfigurableApplicationContext context = SpringApplication.run(Learnupjava20Application.class, args);
 
-        PostService postService = context.getBean(PostService.class);
+        Gson gson = new Gson();
+        Book book = Book.builder()
+                .id(1L)
+                .name("Book")
+                .description("Description")
+                .count(1L)
+                .imageUrl("https://url.com")
+                .price(100L)
+                .build();
 
-        updateAsync(postService);
+        String json = gson.toJson(book);
+
+        log.info("{}", json);
+
+        Book serial = gson.fromJson(json, Book.class);
+        log.info("{}", serial);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String s = mapper.writeValueAsString(book);
+        log.info("{}", s);
+
     }
 
 }
